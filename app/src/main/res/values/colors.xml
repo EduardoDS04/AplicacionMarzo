@@ -2,4 +2,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#0B9B1E</color>
+    <color name="material_dynamic_primary70">#1F7D92</color>
+    <color name="material_dynamic_primary20">#053672</color>
 </resources>
