@@ -1,20 +1,37 @@
 package com.example.aplicacionmarzo
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.aplicacionmarzo.adapter.AdapterRestaurante
+import com.example.aplicacionmarzo.controller.ControllerRestaurante
+import com.example.aplicacionmarzo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    // ViewBinding
+    internal lateinit var binding: ActivityMainBinding
+    // Controlador que maneja la lógica de la lista
+    private lateinit var controllerRestaurante: ControllerRestaurante
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setupRecyclerView()
+
+        // Inicializamos el Controlador
+        controllerRestaurante = ControllerRestaurante(this)
+        controllerRestaurante.setAdapter()
+    }
+
+    private fun setupRecyclerView() {
+        // Configuramos el RecyclerView con un LinearLayoutManager
+        binding.myRecyclerView.layoutManager = LinearLayoutManager(this)
+    }
+
+    // configuraramos el adaptador desde el controlador
+    fun setRecyclerViewAdapter(adapter: AdapterRestaurante) {
+        binding.myRecyclerView.adapter = adapter
     }
 }
