@@ -5,7 +5,7 @@ Esta es una aplicación móvil para gestionar restaurantes. Pueden visualizar in
 - Visualización de restaurantes con sus comidas y detalles.
 - Uso de `RecyclerView` para mostrar una lista interactiva.
 - Eliminación de entradas con un botón de borrar.
-- Diseño moderno utilizando `CardView` y `ImageButton`.
+- Diseño moderno utilizando CardView y Imagen, Texto, Botón.
 - 
 ## **Estructura del Proyecto**
 El proyecto está organizado en paquetes según la responsabilidad de cada componente:
@@ -64,5 +64,6 @@ La app tiene dos actividades principales:
   - Contiene el `RecyclerView` que muestra los restaurantes.
   - Inicializa el `ControllerRestaurante` y configura el adaptador del `RecyclerView`.
 
-### Siguiente versiones sería : Versión1.2.- Ccrud completo con alta, edicion y borrado en memoria y a partir de repositorio. Implementación de los DialogFragment para la inserción y edición de datos.
-● Version1.3.- Anadiremos una autenticacion y creacion de usuario en Firebase. Trataremos el tema del registro con validacion por email, logueo y recuperacion de contrasena.
+### Siguiente versiones sería : 
+Versión1.2.- Ccrud completo con alta, edicion y borrado en memoria y a partir de repositorio. Implementación de los DialogFragment para la inserción y edición de datos.
+Version1.3.- Anadiremos una autenticacion y creacion de usuario en Firebase. Trataremos el tema del registro con validacion por email, logueo y recuperacion de contrasena.
