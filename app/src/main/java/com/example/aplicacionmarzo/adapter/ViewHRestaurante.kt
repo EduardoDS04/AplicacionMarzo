@@ -8,6 +8,7 @@ import com.example.aplicacionmarzo.models.Restaurante
 
 class ViewHRestaurante(
     view: View,
+    var onEditClick: (Int) -> Unit,
     var onDeleteClick: (Int) -> Unit
 ) : RecyclerView.ViewHolder(view) {
 
@@ -17,6 +18,10 @@ class ViewHRestaurante(
         // Configurar el botón de eliminar
         binding.btnEliminar.setOnClickListener {
             onDeleteClick(adapterPosition)
+        }
+        // Configurar el botón de editar
+        binding.btnEditar.setOnClickListener {
+            onEditClick(adapterPosition)
         }
     }
 

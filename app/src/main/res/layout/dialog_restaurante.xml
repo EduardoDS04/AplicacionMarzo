@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/txtNombre"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Nombre del Restaurante"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/txtComida"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Comida"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/txtTiempoEntrega"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Tiempo de Entrega"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/txtCantidad"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Cantidad"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/txtPrecio"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Precio"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/txtImagen"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="URL Imagen"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:backgroundTint="#4CAF50"
+        android:padding="8dp" />
+</LinearLayout>

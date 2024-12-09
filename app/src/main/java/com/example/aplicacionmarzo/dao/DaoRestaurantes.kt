@@ -8,6 +8,7 @@ class DaoRestaurantes private constructor() : InterfaceDao {
     companion object {
         val myDao: DaoRestaurantes by lazy { DaoRestaurantes() }
     }
-
     override fun getDataRestaurantes(): List<Restaurante> = Repository.listaRestaurantes
+
 }
+

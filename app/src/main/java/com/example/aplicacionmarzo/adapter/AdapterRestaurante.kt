@@ -8,13 +8,14 @@ import com.example.aplicacionmarzo.models.Restaurante
 
 class AdapterRestaurante(
     private val listaRestaurantes: MutableList<Restaurante>,
-    private val onDeleteClick: (Int) -> Unit
+    private val onDeleteClick: (Int) -> Unit,
+    private val onEditClick: (Int) -> Unit,
 ) : RecyclerView.Adapter<ViewHRestaurante>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHRestaurante {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_restaurante, parent, false)
-        return ViewHRestaurante(view, onDeleteClick)
+        return ViewHRestaurante(view, onEditClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: ViewHRestaurante, position: Int) {

@@ -23,6 +23,9 @@ class MainActivity : AppCompatActivity() {
         // Inicializamos el Controlador
         controllerRestaurante = ControllerRestaurante(this)
         controllerRestaurante.setAdapter()
+        binding.fabAddRestaurante.setOnClickListener {
+            controllerRestaurante.addRestaurante()
+        }
     }
 
     private fun setupRecyclerView() {

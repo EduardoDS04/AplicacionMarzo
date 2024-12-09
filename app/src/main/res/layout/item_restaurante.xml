@@ -74,16 +74,33 @@
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
         </LinearLayout>
+        <!-- Contenedor de botones -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
 
-        <!-- Botón para eliminar -->
-        <ImageButton
-            android:id="@+id/btnEliminar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="bottom"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Eliminar restaurante"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_delete" />
+            <!-- Botón para editar -->
+            <ImageButton
+                android:id="@+id/btnEditar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Editar restaurante"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_edit"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Botón para eliminar -->
+            <ImageButton
+                android:id="@+id/btnEliminar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Eliminar restaurante"
+                android:src="@drawable/ic_delete"
+                android:scaleType="fitXY" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
