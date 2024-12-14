@@ -4,7 +4,8 @@ Esta es una aplicación móvil para gestionar restaurantes. Pueden visualizar in
 ## Características
 - Visualización de restaurantes con sus comidas y detalles.
 - Uso de `RecyclerView` para mostrar una lista interactiva.
-- Eliminación de entradas con un botón de borrar.
+- Funcionalidad para agregar, editar y eliminar restaurantes.
+- Diálogos personalizados para la inserción y edición de datos.
 - Diseño moderno utilizando CardView y Imagen, Texto, Botón.
 - 
 ## **Estructura del Proyecto**
@@ -13,14 +14,14 @@ El proyecto está organizado en paquetes según la responsabilidad de cada compo
 Contiene la clase encargada de gestionar cómo se renderizan los datos en el `RecyclerView`.
 - **Clase: `AdapterRestaurante`**
   - Se conecta al `RecyclerView` y renderiza cada restaurante en un `CardView`.
-  - Escucha eventos como el clic en el botón de eliminar.
+  - Escucha eventos como clics en botones para acciones específicas (eliminar o editar).
 
 ### **2. Paquete `controller`**
 Gestiona la lógica principal de la app, como inicializar datos y manejar interacciones.
 - **Clase: `ControllerRestaurante`**
   - Inicializa los datos de los restaurantes.
   - Proporciona un adaptador al `RecyclerView`.
-  - Implementa la funcionalidad para eliminar restaurantes.
+  - Implementa la funcionalidad para agregar, editar y eliminar restaurantes.
 
 ### **3. Paquete `dao`**
 Almacena y gestiona los datos locales de los restaurantes.
@@ -32,6 +33,9 @@ Almacena y gestiona los datos locales de los restaurantes.
 Contiene los diálogos personalizados usados en la app.
 - **Clase: `DialogEliminarRestaurante`**
   - Podría usarse para confirmar la eliminación de un restaurante.
+- **Clase: `DialogRestaurante`**
+  - Muestra formularios para agregar o editar un restaurante.
+  - Recibe datos iniciales y devuelve los cambios al controlador.
 
 ### **5. Paquete `interfaces`**
 Define interfaces que estandarizan la comunicación entre componentes.
@@ -65,5 +69,4 @@ La app tiene dos actividades principales:
   - Inicializa el `ControllerRestaurante` y configura el adaptador del `RecyclerView`.
 
 ### Siguiente versiones sería : 
-Versión1.2.- Ccrud completo con alta, edicion y borrado en memoria y a partir de repositorio. Implementación de los DialogFragment para la inserción y edición de datos.
 Version1.3.- Anadiremos una autenticacion y creacion de usuario en Firebase. Trataremos el tema del registro con validacion por email, logueo y recuperacion de contrasena.
