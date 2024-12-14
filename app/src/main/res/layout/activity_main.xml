@@ -8,7 +8,7 @@
 
     <!-- RecyclerView que muestra la lista de restaurantes -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/my_recycler_view"
+        android:id="@+id/myRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp" />
@@ -22,4 +22,15 @@
         android:layout_margin="16dp"
         android:contentDescription="Agregar Restaurante"
         app:srcCompat="@drawable/ic_add" />
+
+    <!-- Botón para cerrar sesión -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="80dp"
+        android:backgroundTint="#0D8B54"
+        android:text="Logout"
+        android:textColor="@android:color/white" />
 </FrameLayout>

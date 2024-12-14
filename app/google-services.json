@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "147125219547",
+    "project_id": "aplicacionmarzo-428d5",
+    "storage_bucket": "aplicacionmarzo-428d5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:147125219547:android:1687ec780f7af9c610dcfe",
+        "android_client_info": {
+          "package_name": "com.example.aplicacionmarzo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQC2meWnVvR5xE-O_zhjHE1Gfe7KW1G_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

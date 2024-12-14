@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#0C0707">
 
     <!-- Campo de texto para el usuario -->
     <EditText
@@ -12,16 +12,16 @@
         android:layout_width="257dp"
         android:layout_height="56dp"
         android:background="@drawable/rounded_background"
-        android:hint="User"
+        android:hint="Email"
         android:inputType="text"
         android:textColor="#FFFFFF"
         android:textColorHint="#CCCCCC"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintHorizontal_bias="0.662"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.462" />
+        app:layout_constraintVertical_bias="0.477" />
 
     <!-- Campo de texto para la contraseña -->
 
@@ -37,17 +37,17 @@
         android:textColorHint="#CCCCCC"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.551"
+        app:layout_constraintHorizontal_bias="0.684"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.606" />
+        app:layout_constraintVertical_bias="0.559" />
 
     <!-- Imagen del login -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="226dp"
         android:layout_height="181dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="84dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,17 +57,18 @@
     <!-- Boton de inicio de sesion -->
     <Button
         android:id="@+id/buttonValidate"
-        android:layout_width="206dp"
-        android:layout_height="64dp"
+        android:layout_width="290dp"
+        android:layout_height="59dp"
         android:backgroundTint="#E6035236"
         android:text="Login"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.833" />
-    <!-- Imagen de user -->
+        app:layout_constraintVertical_bias="0.776" />
+
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="65dp"
@@ -78,10 +79,9 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.46"
+        app:layout_constraintVertical_bias="0.473"
         app:srcCompat="@drawable/foto_user" />
 
-    <!-- Imagen de password-->
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="63dp"
@@ -92,8 +92,51 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.641"
+        app:layout_constraintVertical_bias="0.6"
         app:srcCompat="@drawable/foto_password" />
+     <!-- Botón para recuperar contraseña -->
+    <TextView
+        android:id="@+id/textViewForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Forgot password?"
+        android:textColor="#0D93E2"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.833"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
+
+    <!-- Texto "Don’t have an account?" y botón "Create" -->
+    <TextView
+        android:id="@+id/textViewNoAccount"
+        android:layout_width="221dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="92dp"
+        android:layout_marginBottom="100dp"
+        android:text="Don’t have an account?"
+        android:textColor="#F6EFEF"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonCreate"
+        android:layout_width="280dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="128dp"
+        android:backgroundTint="#EF5350"
+        android:text="Create"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.942" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
