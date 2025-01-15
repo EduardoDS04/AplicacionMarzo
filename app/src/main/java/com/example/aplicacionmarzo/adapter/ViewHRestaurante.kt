@@ -31,7 +31,6 @@ class ViewHRestaurante(
         binding.txtTiempoEntrega.text = "Entregado en ${restaurante.tiempoEntrega}"
         binding.txtCantidadPedido.text = "Cantidad: ${restaurante.cantidad}"
         binding.txtPrecio.text = "Precio: ${restaurante.precio} €"
-
         // Cargar imagen con Glide
         Glide.with(itemView.context)
             .load(restaurante.imagen)

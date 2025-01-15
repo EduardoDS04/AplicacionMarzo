@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fragmentPedido"
+        android:title="Pedido"
+        android:icon="@drawable/ic_pedido" />
+    <item
+        android:id="@+id/fragmentConf"
+        android:title="Configuración"
+        android:icon="@drawable/ic_settings" />
+    <item
+        android:id="@+id/fragmentPpal"
+        android:title="Restaurantes"
+        android:icon="@drawable/ic_dashboard" />
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Logout"
+        android:icon="@drawable/ic_logout" />
+    <item
+        android:id="@+id/fragmentComments"
+        android:title="Comentarios"
+        android:icon="@drawable/ic_comment"/>
+</menu>

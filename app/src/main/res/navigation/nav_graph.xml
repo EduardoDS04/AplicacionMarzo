@@ -1,0 +1,30 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragmentPpal">
+
+    <fragment
+        android:id="@+id/fragmentPedido"
+        android:name="com.example.aplicacionmarzo.fragment.pedido.FragmentPedido"
+        android:label="Pedido"
+        tools:layout="@layout/fragment_pedido" />
+
+    <fragment
+        android:id="@+id/fragmentConf"
+        android:name="com.example.aplicacionmarzo.fragment.conf.FragmentConf"
+        android:label="Configuración"
+        tools:layout="@layout/fragment_conf" />
+
+    <fragment
+        android:id="@+id/fragmentPpal"
+        android:name="com.example.aplicacionmarzo.fragment.ppal.FragmentPpal"
+        android:label="Restaurantes"
+        tools:layout="@layout/fragment_ppal" />
+    <fragment
+        android:id="@+id/fragmentComments"
+        android:name="com.example.aplicacionmarzo.fragment.comments.FragmentComments"
+        android:label="Comentarios"
+        tools:layout="@layout/fragment_comments" />
+
+</navigation>
