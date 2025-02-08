@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.comments.FragmentComments">
+    tools:context="ui.views.fragments.FragmentComments">
 
     <!-- RecyclerView para mostrar los comentarios -->
     <androidx.recyclerview.widget.RecyclerView

@@ -6,24 +6,24 @@
 
     <fragment
         android:id="@+id/fragmentPedido"
-        android:name="com.example.aplicacionmarzo.fragment.pedido.FragmentPedido"
+        android:name="com.example.aplicacionmarzo.ui.views.fragments.FragmentPedido"
         android:label="Pedido"
         tools:layout="@layout/fragment_pedido" />
 
     <fragment
         android:id="@+id/fragmentConf"
-        android:name="com.example.aplicacionmarzo.fragment.conf.FragmentConf"
+        android:name="com.example.aplicacionmarzo.ui.views.fragments.FragmentConf"
         android:label="Configuración"
         tools:layout="@layout/fragment_conf" />
 
     <fragment
         android:id="@+id/fragmentPpal"
-        android:name="com.example.aplicacionmarzo.fragment.ppal.FragmentPpal"
+        android:name="com.example.aplicacionmarzo.ui.views.fragments.FragmentPpal"
         android:label="Restaurantes"
         tools:layout="@layout/fragment_ppal" />
     <fragment
         android:id="@+id/fragmentComments"
-        android:name="com.example.aplicacionmarzo.fragment.comments.FragmentComments"
+        android:name="com.example.aplicacionmarzo.ui.views.fragments.FragmentComments"
         android:label="Comentarios"
         tools:layout="@layout/fragment_comments" />
 

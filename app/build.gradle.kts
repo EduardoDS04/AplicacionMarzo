@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     //firebase
     id("com.google.gms.google-services")
+    // Hilt
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
 }
 
 android {
@@ -41,6 +44,11 @@ android {
     viewBinding {
         enable = true
     }
+
+    kapt {
+        correctErrorTypes = true
+    }
+
 }
 
 dependencies {
@@ -50,18 +58,26 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.auth.ktx)
+
+    // Hilt - Inyección de dependencias
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
     implementation("com.google.android.material:material:1.9.0")
-    // Dependencias para Navigation Component
+
+    // Navigation Component
     implementation ("androidx.navigation:navigation-fragment-ktx:2.7.1")
     implementation ("androidx.navigation:navigation-ui-ktx:2.7.1")
-    implementation ("com.google.android.material:material:1.9.0")
-    //firebase
+
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
-
 }
+
