@@ -1,131 +1,111 @@
-# Aplicación de Restaurantes
+# Aplicación de Gestión de Restaurantes
 
-## Descripción
-Esta es una aplicación móvil para gestionar restaurantes. Los usuarios pueden visualizar información sobre restaurantes, sus comidas y realizar acciones como agregar, editar o eliminar restaurantes.
+## 📌 Descripción
+Esta es una aplicación móvil desarrollada en **Kotlin** para gestionar una lista de restaurantes. Permite agregar, actualizar, eliminar y visualizar restaurantes, además de gestionar comentarios de los usuarios.
 
-## Características
-- Visualización de restaurantes con sus comidas y detalles.
-- Uso de `RecyclerView` para mostrar una lista interactiva.
-- Funcionalidad para agregar, editar y eliminar restaurantes.
-- Diálogos personalizados para la inserción y edición de datos.
-- Diseño moderno utilizando `CardView` e integración de imágenes, texto y botones.
-- **Autenticación y registro de usuarios con Firebase:**
-  - Registro con validación por correo electrónico.
-  - Inicio de sesión de usuarios registrados.
-  - Recuperación de contraseñas mediante Firebase.
-- **Integración del Navigation Drawer:**
--Navegación entre diferentes secciones de la aplicación: Pedidos, Configuración, Principal y Comentarios.
--Opción para cerrar sesión desde el drawer_menu.
--Diseño personalizado con íconos y colores ajustados.
--**Navegación con nav_graph:**
--Implementación de navegación entre los fragmentos usando Android Navigation Component.
--Fragmentos disponibles: Pedido, Configuración, Principal y Comentarios.
+La aplicación utiliza **MVVM (Model-View-ViewModel)**, **Hilt** para inyección de dependencias, y **Firebase Authentication** para el sistema de inicio de sesión y registro.
 
-## 📂 **Estructura del Proyecto**
-El proyecto está organizado en paquetes según la responsabilidad de cada componente:
+---
 
-### **1. Paquete `adapter`**
-- **Clase: `AdapterRestaurante`**
-  - Se conecta al `RecyclerView` y renderiza cada restaurante en un `CardView`.
-  - Escucha eventos como clics en botones para acciones específicas (eliminar o editar).
-- **Clase: `ViewHRestaurante`**
-  - Clase encargada de renderizar cada restaurante en un item del `RecyclerView`.
-  - Contiene lógica para manejar los clics en los botones de editar y eliminar.
-  - Utiliza Glide para cargar las imágenes de los restaurantes de manera eficiente.
-- **Clase: `CommentAdapter`**
-  - Adaptador para renderizar los comentarios en un `RecyclerView` dentro del fragmento de comentarios.
-  - Maneja eventos de eliminación de comentarios.
+## 🚀 Características
+- 📋 **Listado de Restaurantes**: Visualización de los restaurantes con sus detalles.
+- ➕ **Agregar Restaurantes**: Formulario para agregar nuevos restaurantes.
+-  **Editar Restaurantes**: Modificación de la información de los restaurantes.
+- ❌ **Eliminar Restaurantes**: Opción para borrar restaurantes con confirmación.
+- 💬 **Gestión de Comentarios**: Los usuarios pueden agregar y eliminar comentarios.
+- 🔐 **Autenticación de Usuarios**: Inicio de sesión, registro y recuperación de contraseña con **Firebase Authentication**.
+-  **Arquitectura MVVM**: Separación clara de responsabilidades.
+-  **Inyección de Dependencias**: Uso de **Dagger Hilt** para gestionar dependencias.
+---
 
-### **2. Paquete `controller`**
-Gestiona la lógica principal de la app, como inicializar datos y manejar interacciones.
-- **Clase: `ControllerRestaurante`**
-  - Inicializa los datos de los restaurantes.
-  - Proporciona un adaptador al `RecyclerView`.
-  - Implementa la funcionalidad para agregar, editar y eliminar restaurantes.
+## 🛠 Tecnologías y Librerías Utilizadas
+- **Kotlin** 
+- **MVVM** 
+- **Dagger Hilt** 🏗
+- **Firebase Authentication** 🔑
+- **RecyclerView** 
+- **Glide** (para cargar imágenes)
+- **LiveData y ViewModel** 
 
-### **3. Paquete `dao`**
-Almacena y gestiona los datos locales de los restaurantes.
-- **Clase: `DaoRestaurantes`**
-  - Contiene una lista inicial de restaurantes, simulando una fuente de datos estática.
-  - Proporciona métodos para acceder y manipular estos datos.
+---
+## 📂 Estructura del Proyecto
+Está dividido en las siguientes carpetas:
+---
 
-### **4. Paquete `dialogues`**
-Contiene los diálogos personalizados usados en la app.
-- **Clase: `DialogEliminarRestaurante`**
-  - Se utiliza para confirmar la eliminación de un restaurante.
-- **Clase: `DialogRestaurante`**
-  - Muestra formularios para agregar o editar un restaurante.
-  - Recibe datos iniciales y devuelve los cambios al controlador.
-### **5. Paquete `fragment`**
-Contiene los fragmentos de navegación de la aplicación.
-- **Fragmento: `FragmentComments`**
-  - Muestra una lista de comentarios con la posibilidad de eliminarlos.
-  - Incluye un diseño interactivo utilizando `RecyclerView`.
-- **Otros fragmentos:**
-  - `FragmentPedido`, `FragmentConf`, y `FragmentPpal` con funciones específicas según el flujo de la app.
+## 📁 **data** (Capa de Datos)
+Esta capa es responsable de manejar los datos de la aplicación, ya sea desde una base de datos local, una API o cualquier otra fuente de datos.
 
-### **6. Paquete `interfaces`**
-Define interfaces que estandarizan la comunicación entre componentes.
-- **Clase: `RestauranteInterface`**
-  - Define los métodos básicos para gestionar los datos de restaurantes.
+- 📁 **datasource**
+  - `DaoRestaurantes.kt` → Actúa como la capa de acceso a datos, proporcionando métodos para obtener, agregar, actualizar y eliminar restaurantes.
 
-### **7. Paquete `models`**
-Define las clases modelo (POJOs) que representan los datos.
-- **Clase: `Restaurante`**
-  - Propiedades:
-    - `nombre`: Nombre del restaurante.
-    - `comida`: Tipo de comida.
-    - `tiempoEntrega`: Tiempo estimado de entrega.
-    - `cantidad`: Cantidad de pedidos.
-    - `precio`: Precio del pedido.
-    - `imagen`: URL o recurso de la imagen del restaurante.
-- **Clase: `Comment`**
-  - Representa un comentario con:
-    - `username`: Usuario que realizó el comentario.
-    - `commentText`: Texto del comentario.
-    - `date`: Fecha del comentario.
+- 📁 **repository**
+  - `RestauranteRepositoryImpl.kt` → Implementa la interfaz del repositorio y usa `DaoRestaurantes` para acceder a los datos de los restaurantes.
 
-### **8. Paquete `objects_models`**
-Contiene objetos de configuración o almacenamiento temporal.
-- **Clase: `Repository`**
-  - Gestiona la lista inicial de restaurantes como una fuente de datos para pruebas.
+---
 
-### **9. Actividades**
-La app tiene las siguientes actividades principales:
-- **Clase: `LoginActivity`**
-  - Permite al usuario ingresar credenciales para acceder a la app.
-  - Implementa validaciones básicas para el inicio de sesión.
-  - Redirige al usuario a `MainActivity` tras un inicio de sesión exitoso.
-  - Guarda la sesión del usuario utilizando `SharedPreferences`.
-- **Clase: `RegisterActivity`**
-  - Permite registrar un nuevo usuario utilizando Firebase.
-  - Incluye validación por correo electrónico.
-  - Desloguea al usuario tras el registro y le solicita verificar su correo electrónico antes de iniciar sesión.
-- **Clase: `MainActivity`**
-  - Contiene el `RecyclerView` que muestra los restaurantes.
-  - Inicializa el `ControllerRestaurante` y configura el adaptador del `RecyclerView`.
-  - Incluye un botón para cerrar sesión que elimina las preferencias compartidas y redirige al `LoginActivity`.
-  - Configura el `Navigation Drawer` con opciones como Pedido, Configuración, Principal, Comentarios y Logout.
-  - Gestiona la navegación entre los fragmentos usando `nav_graph`.
-  - Incluye el `RecyclerView` principal para mostrar los restaurantes y permite agregar nuevos mediante un FAB.
+## 📁 **domain** (Capa de Dominio)
+Contiene la lógica de negocio de la aplicación y define los modelos y casos de uso.
 
-## **Versión Actual: 1.4**
-### Cambios Introducidos:
-- **Integración del Navigation Drawer:**
-  - Agregado un menú lateral para navegar entre las secciones de la aplicación.
-  - Opciones personalizadas con íconos y texto ajustado al diseño.
-  - Opción de cerrar sesión desde el menú lateral.
-  - Nuevo fragmento que muestra una lista genérica de comentarios interactivos.
-- **Navegación con `nav_graph`:**
-  - Implementado un `nav_graph` para gestionar la navegación entre fragmentos.
-- **Toolbar:**
-  - Integración de un toolbar que muestra el título dinámico según el fragmento actual.
-  - Opción para buscar por precio desde el menú del toolbar.
-  - Opción de cerrar sesión.
-  - Opción del carro de compra.
+- 📁 **models**
+  - `Restaurante.kt` → Representa la estructura de un restaurante con atributos como nombre, tipo de comida, tiempo de entrega, precio, etc.
+  - `Comment.kt` → Modelo que representa un comentario, con información sobre el usuario, el texto y la fecha del comentario.
+
+- 📁 **repository**
+  - `RestauranteRepository.kt` → Define la interfaz del repositorio, estableciendo los métodos necesarios para gestionar los restaurantes.
+
+- 📁 **usecase** (Casos de Uso)
+  - `GetRestaurantesUseCase.kt` → Recupera la lista de restaurantes.
+  - `AddRestauranteUseCase.kt` → Permite agregar un nuevo restaurante.
+  - `UpdateRestauranteUseCase.kt` → Modifica un restaurante existente.
+  - `DeleteRestauranteUseCase.kt` → Elimina un restaurante de la lista.
+
+---
+
+## 📁 **ui** (Capa de Presentación)
+Aquí se manejan los componentes visuales y la interacción con el usuario.
+
+- 📁 **adapters** (Adaptadores para RecyclerView)
+  - `AdapterRestaurante.kt` → Se encarga de manejar la lista de restaurantes en un RecyclerView.
+  - `CommentAdapter.kt` → Administra los comentarios en un RecyclerView.
+  - `ViewHRestaurante.kt` → ViewHolder que define la visualización de un restaurante en la lista.
+
+- 📁 **dialogs** (Diálogos Emergentes)
+  - `DialogRestaurante.kt` → Formulario emergente para agregar o editar un restaurante.
+  - `DialogEliminarRestaurante.kt` → Muestra una alerta de confirmación antes de eliminar un restaurante.
+
+- 📁 **viewmodel** (Gestión de Datos en la UI)
+  - `RestauranteViewModel.kt` → Maneja los datos de los restaurantes, interactuando con los casos de uso.
+  - `CommentViewModel.kt` → Gestiona los comentarios, permitiendo agregar y eliminar.
+
+- 📁 **views.activities** (Pantallas Principales)
+  - `LoginActivity.kt` → Pantalla de inicio de sesión con autenticación de Firebase.
+  - `RegisterActivity.kt` → Pantalla para registrar nuevos usuarios.
+  - `MainActivity.kt` → Pantalla principal donde se muestra la lista de restaurantes y la navegación.
+
+- 📁 **views.fragments** (Fragmentos para la navegación)
+  - `FragmentComments.kt` → Muestra los comentarios de los usuarios en un RecyclerView.
+  - `FragmentConf.kt` → Fragmento de configuración.
+  - `FragmentPedido.kt` → Fragmento donde se gestionan los pedidos.
+  - `FragmentPpal.kt` → Fragmento principal de la aplicación.
+
+---
+
+## 📁 **di** (Inyección de Dependencias con Dagger Hilt)
+- `AppModule.kt` → Configura los módulos de inyección de dependencias para el repositorio y otros componentes.
+
+---
+
+## 📁 **aplicación** (Configuración Global)
+- `MyApp.kt` → Configuración inicial de la aplicación con **HiltAndroidApp**.
+
+---
+
+## **Versión Actual: 2.1**
+Adaptación de vuestro proyecto con mvvm e inyección de dependencias con Hilt y toda la funcionalidad.
 
 ## 🚀 **Versiones del proyecto anteriores**
 - **Versión1.1:** Utilización del `RecyclerView` y posibilidad de borrar. Añadimos nuestras propias clases POJO y adaptadores.
 - **Versión1.2:** CRUD completo con alta, edición y borrado en memoria y desde un repositorio. Implementación de los `DialogFragment` para la inserción y edición de datos.
 - **Versión1.3:** Autenticación con Firebase, gestión de usuarios, y persistencia de sesión.
+- **Version1.4:**Adaptación de vuestro proyecto con Navigation Drawer.
 
