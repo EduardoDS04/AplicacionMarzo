@@ -84,7 +84,7 @@ Aquí se manejan los componentes visuales y la interacción con el usuario.
 
 - 📁 **views.fragments** (Fragmentos para la navegación)
   - `FragmentComments.kt` → Muestra los comentarios de los usuarios en un RecyclerView.
-  - `FragmentConf.kt` → Fragmento de configuración.
+  - `FragmentConf.kt` → Fragmento de configuración, donde el usuario puede modificar sus datos.
   - `FragmentPedido.kt` → Fragmento donde se gestionan los pedidos.
   - `FragmentPpal.kt` → Fragmento principal de la aplicación.
 
@@ -99,6 +99,28 @@ Aquí se manejan los componentes visuales y la interacción con el usuario.
 - `MyApp.kt` → Configuración inicial de la aplicación con **HiltAndroidApp**.
 
 ---
+## Funcionalidad añadida
+## 📁 **Configuración del Usuario**
+El fragmento de **Configuración (`FragmentConf`)** permite al usuario gestionar sus datos personales y almacenarlos en la app.  
+
+- 📩 **Correo Electrónico:** Se obtiene automáticamente desde Firebase y **no es editable**.  
+- 📝 **Nombre y Número de Teléfono:** El usuario puede ingresar y guardar sus datos, los cuales se almacenan en `SharedPreferences`.  
+- 🌍 **País:** Nuevo campo agregado donde el usuario puede ingresar su país y almacenarlo de manera persistente.  
+
+Estos datos se **cargan automáticamente** cuando el usuario vuelve a la Configuración y permanecen almacenados aunque cierre la app.
+
+## 📌 **Búsqueda de Restaurantes por Precio**
+En la barra de herramientas (`Toolbar`), se ha implementado una opción de **"Buscar por precio"**.  
+
+- 🔎 **Funcionalidad**:  
+  - Se muestra un cuadro de diálogo donde el usuario ingresa un rango de precio.  
+  - Se filtran los restaurantes cuyo precio sea menor o igual al ingresado.  
+  - Se **ordena la lista por precio ascendente** y se actualiza en tiempo real en el `RecyclerView`.
+
+- 🛠 **Implementación en `MainActivity.kt`**:  
+  - Se maneja la opción de búsqueda en el `Toolbar`.  
+  - Se usa `AlertDialog` con un campo de entrada (`EditText`) para solicitar el precio.  
+  - Se actualiza el `RecyclerView` con la nueva lista filtrada.  
 
 ## **Versión Actual: 2.1**
 Adaptación de vuestro proyecto con mvvm e inyección de dependencias con Hilt y toda la funcionalidad.
