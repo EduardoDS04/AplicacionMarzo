@@ -3,11 +3,15 @@ package com.example.aplicacionmarzo.ui.views.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.aplicacionmarzo.R
@@ -67,20 +71,28 @@ class MainActivity : AppCompatActivity() {
                     logoutUser()
                     true
                 }
+                R.id.fragmentConf -> {
+                    navController.navigate(R.id.fragmentConf)
+                    binding.myRecyclerView.visibility = View.GONE  // Ocultar lista en Configuración
+                    binding.drawerLayout.closeDrawers()
+                    true
+                }
                 R.id.fragmentComments -> {
                     navController.navigate(R.id.fragmentComments)
-                    binding.myRecyclerView.visibility = View.GONE
+                    binding.myRecyclerView.visibility = View.GONE  // Ocultar lista en Comentarios
                     binding.drawerLayout.closeDrawers()
                     true
                 }
                 else -> {
                     navController.navigate(item.itemId)
-                    binding.myRecyclerView.visibility = View.VISIBLE
+                    binding.myRecyclerView.visibility = View.VISIBLE  // Mostrar la lista en otros fragmentos
                     binding.drawerLayout.closeDrawers()
                     true
                 }
             }
         }
+
+
 
         updateNavHeader()
         setupRecyclerView()
@@ -134,6 +146,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_search -> {
+                mostrarDialogoBusqueda()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -160,13 +173,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if (navController.currentDestination?.id == R.id.fragmentComments) {
-            binding.myRecyclerView.visibility = View.GONE
+        val currentDestination = navController.currentDestination?.id
+
+        if (currentDestination == R.id.fragmentConf) {
+            binding.myRecyclerView.visibility = View.GONE  // Ocultar la lista en Configuración
         } else {
-            binding.myRecyclerView.visibility = View.VISIBLE
+            binding.myRecyclerView.visibility = View.VISIBLE  // Mostrarla en otros fragmentos
         }
+
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 
     // Función para mostrar el diálogo de confirmación antes de borrar
     private fun showDeleteConfirmation(posicion: Int) {
@@ -193,4 +210,46 @@ class MainActivity : AppCompatActivity() {
             ).show(supportFragmentManager, "DialogEditarRestaurante")
         }
     }
+
+    private fun mostrarDialogoBusqueda() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Buscar por Precio por debajo de ")
+
+        // Campo de entrada para ingresar el precio
+        val input = EditText(this)
+        input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        builder.setView(input)
+
+        builder.setPositiveButton("Buscar") { _, _ ->
+            val precioIngresado = input.text.toString().toDoubleOrNull()
+            if (precioIngresado != null) {
+                filtrarRestaurantesPorPrecio(precioIngresado)
+            } else {
+                Toast.makeText(this, "Ingrese un precio válido", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Botón de "Cancelar"
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.show()
+    }
+
+    private fun filtrarRestaurantesPorPrecio(precio: Double) {
+        val restaurantesFiltrados = restauranteViewModel.restaurantes.value?.filter {
+            it.precio <= precio
+        }?.sortedBy { it.precio } // Ordenar por precio ascendente
+
+        if (restaurantesFiltrados != null) {
+            binding.myRecyclerView.adapter = AdapterRestaurante(
+                listaRestaurantes = restaurantesFiltrados.toMutableList(),
+                onDeleteClick = { posicion -> showDeleteConfirmation(posicion) },
+                onEditClick = { posicion -> showEditDialog(posicion) }
+            )
+        }
+    }
+
+
 }
