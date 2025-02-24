@@ -6,7 +6,7 @@ data class Restaurante(
     val tiempoEntrega: String,
     val cantidad: Int,
     val precio: Double,
-    val imagen: String
+    val imagen: String?
 ) {
     override fun toString(): String {
         return "Restaurante(nombre='$nombre', comida='$comida', tiempoEntrega='$tiempoEntrega', cantidad=$cantidad, precio=$precio, imagen='$imagen')"

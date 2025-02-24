@@ -1,5 +1,7 @@
 package com.example.aplicacionmarzo.ui.adapters
 
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -15,14 +17,8 @@ class ViewHRestaurante(
     private val binding = ItemRestauranteBinding.bind(view)
 
     init {
-        // botón de eliminar
-        binding.btnEliminar.setOnClickListener {
-            onDeleteClick(adapterPosition)
-        }
-        // botón de editar
-        binding.btnEditar.setOnClickListener {
-            onEditClick(adapterPosition)
-        }
+        binding.btnEliminar.setOnClickListener { onDeleteClick(adapterPosition) }
+        binding.btnEditar.setOnClickListener { onEditClick(adapterPosition) }
     }
 
     fun renderizar(restaurante: Restaurante) {
@@ -31,10 +27,26 @@ class ViewHRestaurante(
         binding.txtTiempoEntrega.text = "Entregado en ${restaurante.tiempoEntrega}"
         binding.txtCantidadPedido.text = "Cantidad: ${restaurante.cantidad}"
         binding.txtPrecio.text = "Precio: ${restaurante.precio} €"
-        // Cargar imagen con Glide
-        Glide.with(itemView.context)
-            .load(restaurante.imagen)
-            .centerCrop()
-            .into(binding.imgRestaurante)
-    }
-}
+
+        // Cargar imagen (URL o Base64)
+        restaurante.imagen?.let { imagen ->
+            if (imagen.startsWith("http")) {
+                // Cargar desde URL con Glide
+                Glide.with(itemView.context)
+                    .load(imagen)
+                    .centerCrop()
+                    .into(binding.imgRestaurante)
+            } else {
+                // Cargar desde Base64
+                try {
+                    val decodedBytes = Base64.decode(imagen, Base64.DEFAULT)
+                    val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                    binding.imgRestaurante.setImageBitmap(bitmap)
+                } catch (e: Exception) {
+                    binding.imgRestaurante.setImageResource(android.R.drawable.ic_menu_report_image)
+                }
+            }
+        } ?: run {
+            binding.imgRestaurante.setImageResource(android.R.drawable.ic_menu_report_image)
+        }
+    } }

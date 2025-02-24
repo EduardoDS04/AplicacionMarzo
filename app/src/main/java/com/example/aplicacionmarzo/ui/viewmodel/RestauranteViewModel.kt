@@ -16,32 +16,36 @@ class RestauranteViewModel @Inject constructor(
     private val getRestaurantesUseCase: GetRestaurantesUseCase,
     private val addRestauranteUseCase: AddRestauranteUseCase,
     private val deleteRestauranteUseCase: DeleteRestauranteUseCase,
-    private val updateRestauranteUseCase: UpdateRestauranteUseCase  // Asegúrate de inyectarlo
+    private val updateRestauranteUseCase: UpdateRestauranteUseCase
 ) : ViewModel() {
 
     private val _restaurantes = MutableLiveData<List<Restaurante>>()
     val restaurantes: LiveData<List<Restaurante>> get() = _restaurantes
 
     init {
-        obtenerRestaurantes()
+        cargarDatosIniciales()
     }
 
-    fun obtenerRestaurantes() {
+    private fun cargarDatosIniciales() {
         _restaurantes.value = getRestaurantesUseCase()
     }
 
     fun agregarRestaurante(nuevoRestaurante: Restaurante) {
         addRestauranteUseCase(nuevoRestaurante)
-        obtenerRestaurantes()
+        actualizarLista()
     }
 
     fun eliminarRestaurante(posicion: Int) {
         deleteRestauranteUseCase(posicion)
-        obtenerRestaurantes()
+        actualizarLista()
     }
 
     fun actualizarRestaurante(posicion: Int, restaurante: Restaurante) {
         updateRestauranteUseCase(posicion, restaurante)
-        obtenerRestaurantes()
+        actualizarLista()
+    }
+
+    private fun actualizarLista() {
+        _restaurantes.value = getRestaurantesUseCase().toList() // Forzar nueva instancia
     }
 }
