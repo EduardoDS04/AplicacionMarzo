@@ -70,7 +70,8 @@ Aquí se manejan los componentes visuales y la interacción con el usuario.
   - `ViewHRestaurante.kt` → ViewHolder que define la visualización de un restaurante en la lista.
 
 - 📁 **dialogs** (Diálogos Emergentes)
-  - `DialogRestaurante.kt` → Formulario emergente para agregar o editar un restaurante.
+  - `DialogRestaurante.kt` → Formulario emergente para agregar o editar un restaurante, además ahora se encarga de capturar imagen a partir de la cámara y dejar en galería.
+    Solicita los permisos de cámara en ejecución,Podemos seleccionar una imagen de la galería y contiene un método en el que la imagen en formato bitmap, lo convierta a Base64.
   - `DialogEliminarRestaurante.kt` → Muestra una alerta de confirmación antes de eliminar un restaurante.
 
 - 📁 **viewmodel** (Gestión de Datos en la UI)
@@ -100,6 +101,14 @@ Aquí se manejan los componentes visuales y la interacción con el usuario.
 
 ---
 ## Funcionalidad añadida
+## 📁 **Captura de imagen y selección de imagen en galería**
+Captura de imágenes desde la cámara.
+Selección de imágenes desde la galería.
+ImageView para previsualizar la imagen seleccionada.
+Método convertBitmapToBase64() para convertir imágenes a Base64 (listo para uso futuro).
+Gestión de permisos en tiempo de ejecución.
+
+
 ## 📁 **Configuración del Usuario**
 El fragmento de **Configuración (`FragmentConf`)** permite al usuario gestionar sus datos personales y almacenarlos en la app.  
 
@@ -122,12 +131,13 @@ En la barra de herramientas (`Toolbar`), se ha implementado una opción de **"Bu
   - Se usa `AlertDialog` con un campo de entrada (`EditText`) para solicitar el precio.  
   - Se actualiza el `RecyclerView` con la nueva lista filtrada.  
 
-## **Versión Actual: 2.1**
-Adaptación de vuestro proyecto con mvvm e inyección de dependencias con Hilt y toda la funcionalidad.
+## **Versión Actual: 3.1**
+Captura de imagen y selección de imagen en galería.
 
 ## 🚀 **Versiones del proyecto anteriores**
 - **Versión1.1:** Utilización del `RecyclerView` y posibilidad de borrar. Añadimos nuestras propias clases POJO y adaptadores.
 - **Versión1.2:** CRUD completo con alta, edición y borrado en memoria y desde un repositorio. Implementación de los `DialogFragment` para la inserción y edición de datos.
 - **Versión1.3:** Autenticación con Firebase, gestión de usuarios, y persistencia de sesión.
-- **Version1.4:**Adaptación de vuestro proyecto con Navigation Drawer.
+- **Version1.4:** Adaptación de vuestro proyecto con Navigation Drawer.
+- **Versión2.1** Adaptación de vuestro proyecto con mvvm e inyección de dependencias con Hilt y toda la funcionalidad.
 
