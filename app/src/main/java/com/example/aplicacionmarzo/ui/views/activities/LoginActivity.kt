@@ -7,154 +7,74 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.aplicacionmarzo.R
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import androidx.lifecycle.lifecycleScope
+import com.example.aplicacionmarzo.databinding.ActivityLoginBinding
+import com.example.aplicacionmarzo.ui.viewmodel.AuthViewModel
+import com.example.aplicacionmarzo.utils.JwtManager
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var btnLogin: Button
-    private lateinit var btnCreate: Button
-    private lateinit var editUser: EditText
-    private lateinit var editPassword: EditText
-    private lateinit var textViewForgotPassword: TextView
+    private lateinit var binding: ActivityLoginBinding
+    private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var jwtManager: JwtManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        jwtManager = JwtManager(this)
 
-        // Verificamos si el usuario ya está logueado
-        val sharedPref = getSharedPreferences("LoginPreferences", Context.MODE_PRIVATE)
-        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false) // Por defecto es false
+        if (jwtManager.isLoggedIn()) navigateToMain()
+        setupUI()
+        observeAuthState()
+    }
 
-        if (isLoggedIn) {
-            // Si el usuario está logueado, redirigimos a MainActivity
-            startMainActivity()
-            return
+    private fun observeAuthState() {
+        lifecycleScope.launch {
+            authViewModel.authState.collect { state ->
+                when (state) {
+                    is AuthViewModel.AuthState.Success -> {
+                        Toast.makeText(this@LoginActivity, "Login exitoso", Toast.LENGTH_LONG).show()
+                        navigateToMain()
+                    }
+                    is AuthViewModel.AuthState.Error -> {
+                        Toast.makeText(this@LoginActivity, "Error en el login: ${state.message}", Toast.LENGTH_LONG).show()
+                    }
+                    is AuthViewModel.AuthState.Loading -> {
+                    }
+                    is AuthViewModel.AuthState.Idle -> {}
+                }
+            }
         }
-
-        setContentView(R.layout.activity_login)
-
-        init() // Inicializa los componentes de la vista
-        start() // Configura los listeners
     }
 
-    private fun init() {
-        editUser = findViewById(R.id.editTextUser)
-        editPassword = findViewById(R.id.editTextPassword)
-        btnLogin = findViewById(R.id.buttonValidate)
-        btnCreate = findViewById(R.id.buttonCreate)
-        textViewForgotPassword = findViewById(R.id.textViewForgotPassword)
+    private fun setupUI() {
+        binding.buttonValidate.setOnClickListener {
+            val credential = binding.editTextUser.text.toString()
+            val password = binding.editTextPassword.text.toString()
 
-        auth = FirebaseAuth.getInstance() // Inicializa FirebaseAuth
-    }
-
-    private fun start() {
-        // Listener para el botón de Login
-        btnLogin.setOnClickListener {
-            val email = editUser.text.toString().trim()
-            val password = editPassword.text.toString().trim()
-
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_LONG).show()
+            if (credential.isNotBlank() && password.isNotBlank()) {
+                authViewModel.login(credential, password)
             } else {
-                loginUser(email, password) { success, message ->
-                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-                    if (success) {
-                        startMainActivity()
-                    }
-                }
+                Toast.makeText(this, "Complete todos los campos", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Listener para el botón Create
-        btnCreate.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-        }
-
-        // Listener para recuperar contraseña
-        textViewForgotPassword.setOnClickListener {
-            val email = editUser.text.toString().trim()
-            if (email.isNotEmpty()) {
-                recoverPassword(email) { success, message ->
-                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-                    if (!success) {
-                        editUser.setText("") // Limpia el campo tras un error
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Introduce tu correo para recuperar la contraseña", Toast.LENGTH_LONG).show()
-            }
+        binding.buttonCreate.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 
-    private fun startMainActivity() {
-        // Guardamos el estado de logueo en SharedPreferences
-        val sharedPref = getSharedPreferences("LoginPreferences", Context.MODE_PRIVATE)
-        val editor = sharedPref.edit()
-        editor.putBoolean("isLoggedIn", true) // Marcamos que el usuario está logueado
-        editor.apply()
-
-        // Navegamos a la pantalla principal
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish() // Finalizamos el LoginActivity
-    }
-
-    private fun loginUser(email: String, password: String, onResult: (Boolean, String) -> Unit) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = auth.currentUser
-                    if (user?.isEmailVerified == true) {
-                        onResult(true, "Inicio de sesión exitoso.")
-                    } else {
-                        auth.signOut() // Desloguea al usuario si no ha verificado el correo
-                        onResult(false, "Por favor, verifica tu correo antes de iniciar sesión.")
-                    }
-                } else {
-                    // Manejo de errores de Firebase
-                    var msg = ""
-                    try {
-                        throw task.exception ?: Exception("Error desconocido")
-                    } catch (e: FirebaseAuthInvalidUserException) {
-                        msg = "El usuario no existe o ha sido deshabilitado."
-                    } catch (e: FirebaseAuthInvalidCredentialsException) {
-                        msg = if (e.message?.contains("There is no user record corresponding to this identifier") == true) {
-                            "El usuario no existe."
-                        } else "Contraseña incorrecta."
-                    } catch (e: Exception) {
-                        msg = e.message.toString()
-                    }
-                    onResult(false, msg)
-                }
-            }
-    }
-
-    private fun recoverPassword(email: String, onResult: (Boolean, String) -> Unit) {
-        auth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    onResult(true, "Correo de recuperación enviado. Revisa tu bandeja de entrada del correo.")
-                } else {
-                    var msg = ""
-                    try {
-                        throw task.exception ?: Exception("Error de reseteo inesperado")
-                    } catch (e: FirebaseAuthInvalidCredentialsException) {
-                        msg = "El formato del email es incorrecto."
-                    } catch (e: Exception) {
-                        msg = e.message.toString()
-                    }
-                    onResult(false, msg)
-                }
-            }
+    private fun navigateToMain() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 
     // Oculta el teclado al tocar fuera de los EditText

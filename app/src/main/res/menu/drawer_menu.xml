@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/fragmentPedido"
-        android:title="Pedido"
-        android:icon="@drawable/ic_pedido" />
-    <item
         android:id="@+id/fragmentConf"
         android:title="Configuración"
         android:icon="@drawable/ic_settings" />

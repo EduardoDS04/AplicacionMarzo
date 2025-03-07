@@ -8,27 +8,36 @@
     android:layout_height="match_parent"
     tools:context=".ui.views.activities.MainActivity">
 
-    <!-- Layout para el toolbar -->
+    <!-- Layout principal con Toolbar y contenido -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Contenedor de Fragmentos -->
+        <!-- Barra de app con toolbar -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:elevation="4dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Ahora solo tenemos el contenedor de fragmentos -->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:navGraph="@navigation/nav_graph"
-            app:defaultNavHost="true" />
-
-        <!-- RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/myRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp"
-            tools:visibility="gone" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph" />
 
         <!-- Botón flotante -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -39,19 +48,8 @@
             android:layout_margin="16dp"
             android:contentDescription="Agregar Restaurante"
             app:srcCompat="@drawable/ic_add" />
-        />
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 
     <!-- Menú lateral (NavigationView) con el header -->
     <com.google.android.material.navigation.NavigationView

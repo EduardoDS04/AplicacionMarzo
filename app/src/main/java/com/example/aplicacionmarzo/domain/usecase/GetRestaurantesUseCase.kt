@@ -4,10 +4,11 @@ import com.example.aplicacionmarzo.domain.models.Restaurante
 import com.example.aplicacionmarzo.domain.repository.RestauranteRepository
 import javax.inject.Inject
 
+
 class GetRestaurantesUseCase @Inject constructor(
-    private val restauranteRepository: RestauranteRepository
+    private val repository: RestauranteRepository
 ) {
-    operator fun invoke(): List<Restaurante> {
-        return restauranteRepository.getRestaurantes()
+    suspend operator fun invoke(): List<Restaurante> {
+        return repository.getRestaurantes()
     }
 }

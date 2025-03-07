@@ -1,33 +1,35 @@
 package com.example.aplicacionmarzo.ui.views.activities
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.aplicacionmarzo.R
-import com.example.aplicacionmarzo.databinding.ActivityMainBinding
-import com.example.aplicacionmarzo.ui.adapters.AdapterRestaurante
-import com.example.aplicacionmarzo.ui.dialogs.DialogEliminarRestaurante
-import com.example.aplicacionmarzo.ui.dialogs.DialogRestaurante
-import com.example.aplicacionmarzo.ui.viewmodel.RestauranteViewModel
-import com.google.firebase.auth.FirebaseAuth
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.aplicacionmarzo.R
+import com.example.aplicacionmarzo.databinding.ActivityMainBinding
+import com.example.aplicacionmarzo.ui.dialogs.DialogRestaurante
+import com.example.aplicacionmarzo.ui.viewmodel.RestauranteViewModel
+import com.example.aplicacionmarzo.ui.views.fragments.FragmentPpal
+import com.example.aplicacionmarzo.utils.JwtManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -36,89 +38,122 @@ class MainActivity : AppCompatActivity() {
     private val restauranteViewModel: RestauranteViewModel by viewModels()
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var auth: FirebaseAuth
+    private lateinit var jwtManager: JwtManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Firebase
-        auth = FirebaseAuth.getInstance()
+        jwtManager = JwtManager(this)
 
-        // Configuración de la Toolbar y el Navigation Component
+        // Verificar autenticación
+        if (!jwtManager.isLoggedIn()) {
+            redirectToLogin()
+            return
+        }
+
+        setupNavigation()
+        setupUIComponents()
+
+        // Observar errores
+        restauranteViewModel.error.observe(this) { errorMsg ->
+            if (errorMsg.isNotEmpty()) {
+                Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+                Log.e("MainActivity", "Error del ViewModel: $errorMsg")
+            }
+        }
+    }
+
+    private fun setupNavigation() {
         setSupportActionBar(binding.toolbar)
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController
+
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.fragmentPedido,
                 R.id.fragmentConf,
                 R.id.fragmentPpal,
                 R.id.fragmentComments
             ),
             binding.drawerLayout
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
         binding.navView.itemIconTintList = null
 
-        // Configuración del menú lateral (Drawer)
+        // Navegar al fragmento principal inicialmente
+        navController.navigate(R.id.fragmentPpal)
+
+        // Listener para manejar navegación
         binding.navView.setNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_logout -> {
-                    logoutUser()
-                    true
-                }
-                R.id.fragmentConf -> {
-                    navController.navigate(R.id.fragmentConf)
-                    binding.myRecyclerView.visibility = View.GONE  // Ocultar lista en Configuración
-                    binding.drawerLayout.closeDrawers()
-                    true
-                }
-                R.id.fragmentComments -> {
-                    navController.navigate(R.id.fragmentComments)
-                    binding.myRecyclerView.visibility = View.GONE  // Ocultar lista en Comentarios
-                    binding.drawerLayout.closeDrawers()
-                    true
-                }
-                else -> {
-                    navController.navigate(item.itemId)
-                    binding.myRecyclerView.visibility = View.VISIBLE  // Mostrar la lista en otros fragmentos
-                    binding.drawerLayout.closeDrawers()
-                    true
-                }
-            }
+            handleNavigationSelection(item)
+            true
         }
+    }
 
-
-
+    private fun setupUIComponents() {
         updateNavHeader()
-        setupRecyclerView()
 
-        // Observamos el LiveData de restaurantes y configuramos el adapter
-        restauranteViewModel.restaurantes.observe(this) { restaurantes ->
-            binding.myRecyclerView.adapter = AdapterRestaurante(
-                listaRestaurantes = restaurantes.toMutableList(),
-                onDeleteClick = { posicion ->
-                    showDeleteConfirmation(posicion)
-                },
-                onEditClick = { posicion ->
-                    showEditDialog(posicion)
-                }
-            )
-        }
-
-        //al pulsar el boton se muestra el diálogo para añadir un nuevo restaurante
         binding.fabAddRestaurante.setOnClickListener {
             DialogRestaurante(
                 restaurante = null,
                 onAction = { nuevoRestaurante ->
+                    Log.d("MainActivity", "Añadiendo restaurante: ${nuevoRestaurante.nombre}")
                     restauranteViewModel.agregarRestaurante(nuevoRestaurante)
+
+                    // Retardo breve para asegurar que la petición se complete
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(500)
+
+                        // Forzar actualización de lista
+                        getCurrentFragment()?.let { fragment ->
+                            if (fragment is FragmentPpal) {
+                                fragment.refreshData()
+                                Toast.makeText(this@MainActivity, "Restaurante añadido correctamente", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                 }
             ).show(supportFragmentManager, "DialogAddRestaurante")
         }
+    }
+
+    private fun getCurrentFragment(): Fragment? {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as? NavHostFragment
+        return navHostFragment?.childFragmentManager?.fragments?.firstOrNull()
+    }
+
+    private fun handleNavigationSelection(item: MenuItem) {
+        when (item.itemId) {
+            R.id.nav_logout -> logoutUser()
+            else -> navController.navigate(item.itemId)
+        }
+        binding.drawerLayout.closeDrawers()
+    }
+
+    private fun updateNavHeader() {
+        val headerView = binding.navView.getHeaderView(0)
+
+        // Actualizar el nombre del usuario
+        val userNameTextView: TextView = headerView.findViewById(R.id.textViewUserName)
+        userNameTextView.text = jwtManager.getUserName() ?: "Eduardo"
+
+        // Actualizar el email del usuario
+        val userEmailTextView: TextView = headerView.findViewById(R.id.textViewUserEmail)
+        userEmailTextView.text = jwtManager.getUserEmail() ?: "edirnoyin@gmail.com"
+    }
+
+    private fun logoutUser() {
+        jwtManager.clearToken()
+        redirectToLogin()
+    }
+
+    private fun redirectToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -142,9 +177,6 @@ class MainActivity : AppCompatActivity() {
                 logoutUser()
                 true
             }
-            R.id.action_carro -> {
-                true
-            }
             R.id.action_search -> {
                 mostrarDialogoBusqueda()
                 true
@@ -153,67 +185,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupRecyclerView() {
-        binding.myRecyclerView.layoutManager = LinearLayoutManager(this)
-    }
-
-    private fun updateNavHeader() {
-        val headerView = binding.navView.getHeaderView(0)
-        val userEmailTextView: TextView = headerView.findViewById(R.id.textViewUserEmail)
-        val currentUser = auth.currentUser
-        userEmailTextView.text = currentUser?.email ?: "Invitado"
-    }
-
-    private fun logoutUser() {
-        val sharedPref = getSharedPreferences("LoginPreferences", Context.MODE_PRIVATE)
-        sharedPref.edit().putBoolean("isLoggedIn", false).apply()
-        auth.signOut()
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish()
-    }
-
     override fun onSupportNavigateUp(): Boolean {
-        val currentDestination = navController.currentDestination?.id
-
-        if (currentDestination == R.id.fragmentConf) {
-            binding.myRecyclerView.visibility = View.GONE  // Ocultar la lista en Configuración
-        } else {
-            binding.myRecyclerView.visibility = View.VISIBLE  // Mostrarla en otros fragmentos
-        }
-
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-
-    // Función para mostrar el diálogo de confirmación antes de borrar
-    private fun showDeleteConfirmation(posicion: Int) {
-        val restaurante = restauranteViewModel.restaurantes.value?.get(posicion)
-        if (restaurante != null) {
-            DialogEliminarRestaurante(
-                nombreRestaurante = restaurante.nombre,
-                onConfirmarEliminacion = {
-                    restauranteViewModel.eliminarRestaurante(posicion)
-                }
-            ).show(supportFragmentManager, "DialogEliminarRestaurante")
-        }
-    }
-
-    // Función para mostrar el formulario de edición
-    private fun showEditDialog(posicion: Int) {
-        val restaurante = restauranteViewModel.restaurantes.value?.get(posicion)
-        if (restaurante != null) {
-            DialogRestaurante(
-                restaurante = restaurante,
-                onAction = { restauranteEditado ->
-                    restauranteViewModel.actualizarRestaurante(posicion, restauranteEditado)
-                }
-            ).show(supportFragmentManager, "DialogEditarRestaurante")
-        }
     }
 
     private fun mostrarDialogoBusqueda() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Buscar por Precio por debajo de ")
+        builder.setTitle("Buscar por Precio por debajo de")
 
         // Campo de entrada para ingresar el precio
         val input = EditText(this)
@@ -223,9 +201,25 @@ class MainActivity : AppCompatActivity() {
         builder.setPositiveButton("Buscar") { _, _ ->
             val precioIngresado = input.text.toString().toDoubleOrNull()
             if (precioIngresado != null) {
-                filtrarRestaurantesPorPrecio(precioIngresado)
+                // Encuentra el fragmento actual y aplica el filtro si es FragmentPpal
+                val currentFragment = getCurrentFragment()
+
+                if (currentFragment is FragmentPpal) {
+                    currentFragment.filtrarPorPrecio(precioIngresado)
+                    Toast.makeText(this, "Mostrando restaurantes con precio <= $precioIngresado €", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(this, "Ingrese un precio válido", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Botón para mostrar todos
+        builder.setNeutralButton("Mostrar todos") { _, _ ->
+            val currentFragment = getCurrentFragment()
+
+            if (currentFragment is FragmentPpal) {
+                currentFragment.mostrarTodos()
+                Toast.makeText(this, "Mostrando todos los restaurantes", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -236,20 +230,4 @@ class MainActivity : AppCompatActivity() {
 
         builder.show()
     }
-
-    private fun filtrarRestaurantesPorPrecio(precio: Double) {
-        val restaurantesFiltrados = restauranteViewModel.restaurantes.value?.filter {
-            it.precio <= precio
-        }?.sortedBy { it.precio } // Ordenar por precio ascendente
-
-        if (restaurantesFiltrados != null) {
-            binding.myRecyclerView.adapter = AdapterRestaurante(
-                listaRestaurantes = restaurantesFiltrados.toMutableList(),
-                onDeleteClick = { posicion -> showDeleteConfirmation(posicion) },
-                onEditClick = { posicion -> showEditDialog(posicion) }
-            )
-        }
-    }
-
-
 }

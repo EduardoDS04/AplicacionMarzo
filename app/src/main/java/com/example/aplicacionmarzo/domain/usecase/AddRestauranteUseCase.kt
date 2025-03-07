@@ -7,7 +7,7 @@ import javax.inject.Inject
 class AddRestauranteUseCase @Inject constructor(
     private val restauranteRepository: RestauranteRepository
 ) {
-    operator fun invoke(restaurante: Restaurante) {
+    suspend operator fun invoke(restaurante: Restaurante) {
         restauranteRepository.agregarRestaurante(restaurante)
     }
 }

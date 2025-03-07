@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -25,6 +26,11 @@ class DialogRestaurante(
     private var _binding: DialogRestauranteBinding? = null
     private val binding get() = _binding!!
     private var selectedBitmap: Bitmap? = null
+    private val MAX_IMAGE_DIMENSION = 100
+    // Tamaño máximo para la imagen codificada en Base64 (caracteres)
+    private val MAX_BASE64_LENGTH = 250
+
+    private var procesando = false
 
     // Registros para manejar resultados
     private val galeriaLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -33,7 +39,7 @@ class DialogRestaurante(
 
     private val camaraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
         bitmap?.let {
-            selectedBitmap = escalarBitmap(it, 1024, 1024)
+            selectedBitmap = escalarBitmap(it, MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION)
             binding.imgPreview.setImageBitmap(selectedBitmap)
         }
     }
@@ -57,12 +63,12 @@ class DialogRestaurante(
             options.inSampleSize = calcularFactorEscalado(
                 options.outWidth,
                 options.outHeight,
-                1024,
-                1024
+                MAX_IMAGE_DIMENSION,
+                MAX_IMAGE_DIMENSION
             )
 
             options.inJustDecodeBounds = false
-            options.inPreferredConfig = Bitmap.Config.RGB_565
+            options.inPreferredConfig = Bitmap.Config.RGB_565 // Menor consumo de memoria
 
             val newInputStream = requireContext().contentResolver.openInputStream(uri)
             selectedBitmap = BitmapFactory.decodeStream(newInputStream, null, options)
@@ -107,6 +113,54 @@ class DialogRestaurante(
         )
     }
 
+    private fun bitmapABase64(bitmap: Bitmap?): String? {
+        if (bitmap == null) return null
+
+        return try {
+            // Empezar con un bitmap muy pequeño
+            val bitmapPequeno = escalarBitmap(bitmap, MAX_IMAGE_DIMENSION, MAX_IMAGE_DIMENSION)
+
+            // Comprimir con calidad muy baja
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            var calidad = 10 // Calidad inicial muy baja
+
+            do {
+                byteArrayOutputStream.reset()
+                bitmapPequeno.compress(Bitmap.CompressFormat.JPEG, calidad, byteArrayOutputStream)
+
+                // Codificar en Base64
+                val resultado = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT)
+
+                Log.d("DialogRestaurante", "Tamaño Base64: ${resultado.length} caracteres, calidad: $calidad")
+
+                // Si es demasiado grande, reducir la calidad más
+                if (resultado.length > MAX_BASE64_LENGTH && calidad > 1) {
+                    calidad -= 1
+                } else {
+                    // Si llegamos a calidad 1 o es suficientemente pequeño, lo usamos
+                    if (resultado.length > MAX_BASE64_LENGTH) {
+                        Toast.makeText(
+                            requireContext(),
+                            "La imagen es demasiado grande, se usará una URL predeterminada",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        // Si aun así es demasiado grande, usar una URL predeterminada
+                        return "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/120px-No_image_available.svg.png"
+                    }
+                    return resultado
+                }
+            } while (calidad > 1)
+
+            // Si llegamos aquí, algo salió mal
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/120px-No_image_available.svg.png"
+        } catch (e: Exception) {
+            Log.e("DialogRestaurante", "Error al comprimir imagen", e)
+            Toast.makeText(requireContext(), "Error al procesar la imagen", Toast.LENGTH_SHORT).show()
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/120px-No_image_available.svg.png"
+        }
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogRestauranteBinding.inflate(layoutInflater)
 
@@ -116,26 +170,51 @@ class DialogRestaurante(
         val builder = AlertDialog.Builder(requireContext())
             .setTitle(if (restaurante == null) "Añadir Restaurante" else "Editar Restaurante")
             .setView(binding.root)
-            .setPositiveButton("Guardar") { _, _ ->
-                validarYCrearRestaurante()
-            }
+            .setPositiveButton("Guardar", null) // Importante: inicialmente null
             .setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
+
+        val dialog = builder.create()
+
+        // Configuramos el listener después de crear el diálogo para evitar el cierre automático
+        dialog.setOnShowListener {
+            val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            button.setOnClickListener {
+                if (!procesando) {
+                    procesando = true
+                    if (validarYCrearRestaurante()) {
+                        dialog.dismiss()
+                    }
+                    procesando = false
+                }
+            }
+        }
 
         restaurante?.let { cargarDatosExistente(it) }
 
-        return builder.create()
+        return dialog
     }
 
-    private fun validarYCrearRestaurante() {
+    private fun validarYCrearRestaurante(): Boolean {
         val nombre = binding.txtNombre.text.toString()
         val comida = binding.txtComida.text.toString()
         val tiempoEntrega = binding.txtTiempoEntrega.text.toString()
         val cantidad = binding.txtCantidad.text.toString().toIntOrNull()
         val precio = binding.txtPrecio.text.toString().toDoubleOrNull()
-        val imagenBase64 = bitmapABase64(selectedBitmap)
+
+        // Procesar la imagen si existe
+        val imagenBase64 = if (selectedBitmap != null) {
+            bitmapABase64(selectedBitmap)
+        } else if (restaurante?.imagen?.startsWith("http") == true) {
+            // Si es una URL externa y no se cambió la imagen, mantener la URL
+            restaurante.imagen
+        } else {
+            // Imagen por defecto si no hay seleccionada
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/120px-No_image_available.svg.png"
+        }
 
         if (validarCampos(nombre, comida, tiempoEntrega, cantidad, precio)) {
             val nuevoRestaurante = Restaurante(
+                id = restaurante?.id,
                 nombre = nombre,
                 comida = comida,
                 tiempoEntrega = tiempoEntrega,
@@ -143,9 +222,13 @@ class DialogRestaurante(
                 precio = precio!!,
                 imagen = imagenBase64
             )
+
+            Log.d("DialogRestaurante", "Creando restaurante: $nuevoRestaurante")
             onAction(nuevoRestaurante)
+            return true
         } else {
             Toast.makeText(requireContext(), "Complete todos los campos", Toast.LENGTH_SHORT).show()
+            return false
         }
     }
 
@@ -163,17 +246,6 @@ class DialogRestaurante(
                 precio != null
     }
 
-    private fun bitmapABase64(bitmap: Bitmap?): String? {
-        if (bitmap == null) return null
-        return try {
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream)
-            Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT)
-        } catch (e: Exception) {
-            null
-        }
-    }
-
     private fun cargarDatosExistente(restaurante: Restaurante) {
         binding.txtNombre.setText(restaurante.nombre)
         binding.txtComida.setText(restaurante.comida)
@@ -182,12 +254,20 @@ class DialogRestaurante(
         binding.txtPrecio.setText(restaurante.precio.toString())
 
         restaurante.imagen?.let {
-            try {
-                val decodedBytes = Base64.decode(it, Base64.DEFAULT)
-                selectedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-                binding.imgPreview.setImageBitmap(selectedBitmap)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "No hay fotos guardadas", Toast.LENGTH_SHORT).show()
+            if (it.startsWith("http")) {
+                // Es una URL, mostrar mensaje informativo
+                Toast.makeText(requireContext(), "Imagen cargada desde URL", Toast.LENGTH_SHORT).show()
+                // La imagen se cargará mediante Glide en el ViewHolder
+            } else {
+                try {
+                    val decodedBytes = Base64.decode(it, Base64.DEFAULT)
+                    val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                    selectedBitmap = bitmap
+                    binding.imgPreview.setImageBitmap(bitmap)
+                } catch (e: Exception) {
+                    Log.e("DialogRestaurante", "Error al decodificar imagen", e)
+                    Toast.makeText(requireContext(), "No se pudo cargar la imagen guardada", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="176dp"
+    android:gravity="bottom"
+    android:background="@drawable/side_nav_bar"
     android:orientation="vertical"
     android:padding="16dp"
-    android:gravity="center_horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <!-- Imagen del usuario -->
     <ImageView
-        android:id="@+id/nav_header_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/ic_user"
-        android:scaleType="fitCenter"
-        android:contentDescription="Imagen de usuario"
-        android:layout_marginBottom="12dp"
-        android:layout_gravity="center"
-        android:padding="4dp" />
+        android:id="@+id/imageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:contentDescription="Avatar"
+        android:src="@drawable/ic_user" />
 
-    <!-- Correo electrónico del usuario -->
+    <TextView
+        android:id="@+id/textViewUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="Nombre de Usuario"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/textViewUserEmail"
-        android:layout_width="283dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="8dp"
-        android:text="Invitado"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="email@example.com"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
 </LinearLayout>

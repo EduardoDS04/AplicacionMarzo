@@ -5,12 +5,6 @@
     app:startDestination="@id/fragmentPpal">
 
     <fragment
-        android:id="@+id/fragmentPedido"
-        android:name="com.example.aplicacionmarzo.ui.views.fragments.FragmentPedido"
-        android:label="Pedido"
-        tools:layout="@layout/fragment_pedido" />
-
-    <fragment
         android:id="@+id/fragmentConf"
         android:name="com.example.aplicacionmarzo.ui.views.fragments.FragmentConf"
         android:label="Configuración"

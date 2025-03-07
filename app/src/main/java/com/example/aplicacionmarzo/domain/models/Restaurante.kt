@@ -1,14 +1,14 @@
 package com.example.aplicacionmarzo.domain.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Restaurante(
+    val id: Int? = null,
     val nombre: String,
     val comida: String,
     val tiempoEntrega: String,
     val cantidad: Int,
     val precio: Double,
-    val imagen: String?
-) {
-    override fun toString(): String {
-        return "Restaurante(nombre='$nombre', comida='$comida', tiempoEntrega='$tiempoEntrega', cantidad=$cantidad, precio=$precio, imagen='$imagen')"
-    }
-}
+    val imagen: String? = null
+)
